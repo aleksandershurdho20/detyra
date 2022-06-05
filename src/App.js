@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+
+
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
+import Regjistro from './Regjistro';
+import Login from "./Login";
+
+import './App.css'
+import Kryefaqja from "./Kryefaqja";
+export default function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Login />}/>
+        
+        <Route path="/kryefaqja" element={<Kryefaqja />}/>
+        <Route path="/regjistro" element={<Regjistro />}>
+
+      </Route>
+    </Routes>
+  </BrowserRouter>
   );
 }
-
-export default App;
