@@ -18,9 +18,7 @@ const Login = () => {
       message.error("Emaili ose Passwordi nuk eshte i sakte!");
       return;
     }
-   
-    
-
+  
     if (email.includes("admin")) {
       navigate("/regjistro");
     } else {
@@ -66,7 +64,7 @@ const Login = () => {
             },
           ]}
         >
-          <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input value={email} onChange={(e) => setEmail(e.target.value)} autoComplete={false} />
         </Form.Item>
 
         <Form.Item

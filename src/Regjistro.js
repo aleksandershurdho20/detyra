@@ -1,14 +1,17 @@
-import { useState } from "react";
-import { Form, Input, Button, message, Row, Col, PageHeader } from "antd";
+import { useState,useId } from "react";
+import { Form, Input, Button, message, Row, Col, PageHeader,Modal } from "antd";
 import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
 
 import Tabela from "./Tabela";
+import Update from "./Update";
 
 export default function Regjistro() {
   const history = useNavigate();
 
+  const id = useId();
   const [data, setData] = useState({
+    id,
     emer: "",
     mbiemer: "",
     adresa: "",
@@ -38,6 +41,35 @@ export default function Regjistro() {
     },
   ]);
 
+
+  const [open,setOpen]=useState(false)
+
+const [dataForUpdate,setDataForUpdate]=useState({})
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const handleUpdateRecord = () => {
+    const newData = [...teDhenat];
+    const index = newData.findIndex((item) => dataForUpdate.emer === item.emer);
+
+    if (index > -1) {
+      const item = newData[index];
+      newData.splice(index, 1, { ...item, ...dataForUpdate });
+      setTeDhenat(newData);
+    } 
+    
+    message.success("Te dhenat u modifikuan me sukses")
+    setOpen(false);
+    
+    localStorage.setItem("data", JSON.stringify(newData));
+
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData({
@@ -55,13 +87,13 @@ export default function Regjistro() {
       return;
     }
     const submit = [...teDhenat, data];
-    console.log(submit);
     setTeDhenat(submit);
     localStorage.setItem("data", JSON.stringify(submit));
     message.success("Regjistrimi u krye me sukses!");
 
     setData({
       ...data,
+      emer:"",
       mbiemer: "",
       adresa: "",
       vendlindja: "",
@@ -72,7 +104,43 @@ export default function Regjistro() {
       email: "",
     });
   };
-  console.log(JSON.parse(localStorage.getItem("data")), "sdsd");
+
+  const handleDelete =(el) =>{
+    
+    if(el.emer === "Admin"){
+      message.error("Nuk mund te fshihet admini!")
+      return;
+    }
+    else {
+      let filteredArr = [...teDhenat]
+      const dataToDelete = filteredArr.filter(data => data.id !== el)
+      localStorage.setItem("data", JSON.stringify(dataToDelete));
+  
+      setTeDhenat(dataToDelete)
+      message.success("Rrjeshti u fshi me sukses!")
+
+    }
+  }
+
+
+  // const save =  () => {
+  //     const newData = [...teDhenat];
+  //     const index = newData.findIndex((item) => dataForUpdate.emer === item.emer);
+
+  //     if (index > -1) {
+  //       const item = newData[index];
+  //       newData.splice(index, 1, { ...item, ...dataForUpdate });
+  //       setTeDhenat(newData);
+  //     } 
+  
+  // };
+
+
+  const handleUpdate=(data) =>{
+    setOpen(!open)
+    setDataForUpdate(data)
+  }
+
 
   return (
     <>
@@ -172,7 +240,17 @@ export default function Regjistro() {
         </Button>
       </Form>
 
-      <Tabela data={JSON.parse(localStorage.getItem("data"))} />
+      <Tabela data={JSON.parse(localStorage.getItem("data"))} handleDelete={handleDelete} handleUpdate={handleUpdate}   />
+
+      <Modal title={"Modifiko" +" " + dataForUpdate.emer} visible={open} okText="Modifiko" onOk={handleUpdateRecord} onCancel={handleCancel} >
+        <Update data={dataForUpdate} setData={setDataForUpdate} handleChange={(e) =>{
+          const {name,value}=e.target;
+          setDataForUpdate({
+            ...dataForUpdate,
+            [name]:value
+          })
+        }}/>
+      </Modal>
     </>
   );
 }
